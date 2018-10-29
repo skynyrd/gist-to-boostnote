@@ -1,8 +1,11 @@
 import ujson
 import uuid
 from datetime import datetime
+from pathlib import Path
+
 
 from Exceptions import CannotFindFolderKeyError
+from language_ext_map import language_ext_map
 
 
 class BoostNoteService(object):
@@ -22,21 +25,30 @@ class BoostNoteService(object):
         folder_key = self.get_folder_key(self.virtual_folder_name)
 
         for gist in gists:
-            for i in range(0, len(gist.files)):
-                tag = "[]"
-                if len(gist.files) > 1:
-                    tag = f'["Gist {gist.id}"]'
-                with open(f'{self.folder_path}/{uuid.uuid4()}.cson', 'w') as file:
-                    current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-                    file.write(f"createdAt: \"{current_time}\"\n")
-                    file.write(f"updatedAt: \"{current_time}\"\n")
-                    file.write(f"type: \"MARKDOWN_NOTE\"\n")
-                    file.write(f"folder: \"{folder_key}\"\n")
-                    file.write(f"title: \"{gist.files[i].file_name}\"\n")
-                    file.write(f"content: '''\n")
-                    file.write(gist.files[i].content)
+            with open(f'{self.folder_path}/gist-{uuid.uuid4()}.cson', 'w') as file:
+                current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                file.write(f"createdAt: \"{current_time}\"\n")
+                file.write(f"updatedAt: \"{current_time}\"\n")
+                file.write(f"type: \"SNIPPET_NOTE\"\n")
+                file.write(f"folder: \"{folder_key}\"\n")
+                file.write(f"title: \"{gist.description}\"\n")
+                file.write(f"description: \"{gist.description}\"\n")
+                file.write("snippets: [\n")
+                for gist_file in gist.files:
+                    not_supported = False
+                    extension = Path(gist_file.file_name).suffix[1:]
+                    if extension not in language_ext_map:
+                        not_supported = True
+                    language = "text" if not_supported else language_ext_map[extension]
+                    file.write("  {\n")
+                    file.write(f'    name: "{gist_file.file_name}"\n')
+                    file.write(f'    mode: "{language}"\n')
+                    file.write(f"    content: '''\n")
+                    file.write(gist_file.content)
                     file.write("\n")
                     file.write("'''\n")
-                    file.write(f'tags: {tag}\n')
-                    file.write("isStarred: false\n")
-                    file.write("isTrashed: false")
+                    file.write("  }\n")
+                file.write("]\n")
+                file.write(f'tags: []\n')
+                file.write("isStarred: false\n")
+                file.write("isTrashed: false")

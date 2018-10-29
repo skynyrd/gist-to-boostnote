@@ -36,17 +36,16 @@ class GistApiClient(object):
                                                           session,
                                                           self.retry_count, True)
 
-            gist_files_map = {}
             tasks = []
+            gists = []
 
             for gist in user_gists_resp:
+                files = []
                 for key in gist["files"]:
                     gist_file_dto = GistFileDto(key, gist["files"][key]["raw_url"])
                     tasks.append(asyncio.ensure_future(self.assign_content(gist_file_dto, session, self.retry_count)))
-                    if gist["id"] not in gist_files_map:
-                        gist_files_map[gist["id"]] = [gist_file_dto]
-                    else:
-                        gist_files_map[gist["id"]].append(gist_file_dto)
+                    files.append(gist_file_dto)
+                gists.append(GistDto(gist["id"], files, gist["description"]))
 
             await asyncio.gather(*tasks)
-            return [GistDto(gist_id, gist_files_map[gist_id]) for gist_id in gist_files_map]
+            return gists
