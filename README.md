@@ -16,6 +16,7 @@ Although [Gist Service](https://gist.github.com) is a great cloud platform for y
 1. Create a folder in BoostNote app, script will create notes into it.
 1. Clone the repo
 1. `cd gist-to-boostnote`
+1. `pip3 install -r requirements.txt`
 1. `export PYTHONPATH=./`
 1. python3 src/gist-to-boostnote.py /YOUR/BOOSTNOTE/FOLDER/PATH GITHUB_USER_NAME BOOSTNOTE_FOLDER_NAME
     1. e.g. `python3 src/gist-to-boostnote.py /Users/skynyrd/Boostnote skynyrd GistFolder`
