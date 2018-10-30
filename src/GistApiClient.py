@@ -3,7 +3,7 @@ import asyncio
 import aiohttp
 from typing import List
 
-from GistDto import GistDto, GistFileDto
+from src.GistDto import GistDto, GistFileDto
 
 
 class GistApiClient(object):

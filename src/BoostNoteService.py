@@ -3,9 +3,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-
-from Exceptions import CannotFindFolderKeyError
-from language_ext_map import language_ext_map
+from src.language_ext_map import language_ext_map
 
 
 class BoostNoteService(object):
@@ -13,19 +11,19 @@ class BoostNoteService(object):
         self.virtual_folder_name = virtual_folder_name
         self.folder_path = boost_note_path
 
-    def get_folder_key(self, folder_name):
+    def get_folder_key(self):
         config_path = f'{self.folder_path}/boostnote.json'
         with open(config_path) as fd:
             for folder in ujson.load(fd)['folders']:
-                if folder["name"] == folder_name:
+                if folder["name"] == self.virtual_folder_name:
                     return folder["key"]
-        raise CannotFindFolderKeyError(config_path, folder_name)
+        return None
 
     def create_files(self, gists):
-        folder_key = self.get_folder_key(self.virtual_folder_name)
+        folder_key = self.get_folder_key()
 
         for gist in gists:
-            with open(f'{self.folder_path}/gist-{uuid.uuid4()}.cson', 'w') as file:
+            with open(f'{self.folder_path}/notes/gist-{uuid.uuid4()}.cson', 'w') as file:
                 current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
                 file.write(f"createdAt: \"{current_time}\"\n")
                 file.write(f"updatedAt: \"{current_time}\"\n")
