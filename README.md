@@ -1,6 +1,6 @@
 # gist-to-boostnote
 
-Script to create [Boostnote](https://github.com/BoostIO/Boostnote)s from your public gists.
+Script to create [Boostnote](https://github.com/BoostIO/Boostnote)s from anyone's public gists.
 
 ### Description
 
