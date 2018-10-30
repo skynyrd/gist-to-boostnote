@@ -9,6 +9,7 @@ Although [Gist Service](https://gist.github.com) is a great cloud platform for y
 ### Requirements
 
 * Python > 3.5
+* MacOS or Linux
 
 ### Usage
 
